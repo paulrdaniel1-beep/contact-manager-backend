@@ -2,18 +2,30 @@ import express from 'express';
 import cors from 'cors';
 import { pool } from './db.js';
 import { randomUUID } from 'crypto';
-import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
-
+// import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
 
 const app = express();
-app.use(cors());
+
+// Allow your frontend to access the backend
+app.use(cors({
+  origin: [
+    "https://contact-manager-frontend-phi.vercel.app",
+    "https://contact-manager-frontend-git-main-paulrdaniel1-beeps-projects.vercel.app"
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+}));
+
 app.use(express.json());
-app.use("/contacts", ClerkExpressRequireAuth());
+
+// REMOVE Clerk auth for now — frontend is not sending tokens yet
+// app.use("/contacts", ClerkExpressRequireAuth());
 
 // GET all contacts
 app.get('/contacts', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM contacts ORDER BY family_name, first_name');
+    const result = await pool.query(
+      'SELECT * FROM contacts ORDER BY family_name, first_name'
+    );
     res.json(result.rows);
   } catch (err) {
     console.error(err);
