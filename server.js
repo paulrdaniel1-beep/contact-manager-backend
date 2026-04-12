@@ -2,10 +2,13 @@ import express from 'express';
 import cors from 'cors';
 import { pool } from './db.js';
 import { randomUUID } from 'crypto';
+import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
+
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use("/contacts", ClerkExpressRequireAuth());
 
 // GET all contacts
 app.get('/contacts', async (req, res) => {
