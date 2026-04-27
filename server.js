@@ -109,6 +109,22 @@ app.post('/users', async (req, res) => {
   }
 });
 
+// CREATE a user login (alias for /users)
+app.post('/user-logins', async (req, res) => {
+  const { user_id, first_name, last_name } = req.body;
+
+  try {
+    const result = await pool.query(
+      'INSERT INTO user_logins (user_id, first_name, last_name, login_count, last_login) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [user_id, first_name, last_name, 0, null]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to create user login' });
+  }
+});
+
 // Render uses PORT env var
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
