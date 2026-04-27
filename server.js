@@ -80,6 +80,19 @@ app.delete('/contacts/:id', async (req, res) => {
   }
 });
 
+// GET user stats
+app.get('/user-stats', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT user_id, first_name, last_name, login_count, last_login FROM user_stats'
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch user stats' });
+  }
+});
+
 // Render uses PORT env var
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
