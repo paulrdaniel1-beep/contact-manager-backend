@@ -84,12 +84,28 @@ app.delete('/contacts/:id', async (req, res) => {
 app.get('/user-stats', async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT user_id, first_name, last_name, login_count, last_login FROM user_stats'
+      'SELECT user_id, first_name, last_name, login_count, last_login FROM user_logins'
     );
     res.json(result.rows);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to fetch user stats' });
+  }
+});
+
+// CREATE a user
+app.post('/users', async (req, res) => {
+  const { user_id, first_name, last_name } = req.body;
+
+  try {
+    const result = await pool.query(
+      'INSERT INTO user_logins (user_id, first_name, last_name, login_count, last_login) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [user_id, first_name, last_name, 0, null]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to create user' });
   }
 });
 
